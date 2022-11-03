@@ -4,67 +4,96 @@
         let tabla = document.getElementById('tablaRegActividades');
         if(tabla) tabla.remove();
 
-        google.script.run.withSuccessHandler(
-            function(obj){
+        google.script.run
+        .withSuccessHandler(crearTablaRegistrosCorrectamente)
+        .withFailureHandler(crearTablaRegistrosError)
+        .obtenerRegActividades();
+    }
 
-                
-                tabla = document.createElement('table');
-                tabla.id = 'tablaRegActividades';
+    function crearTablaRegistrosCorrectamente(obj){
 
-                let tableHeader = document.createElement('thead');
-                let tablaBody = document.createElement('tbody');
-                let primerFila = document.createElement('tr');
-
-                // Header de la tabla 
-                for(let k =0; k < obj[0].length; k++){
-                    let primeraCelda = document.createElement('td');
-                    primeraCelda.textContent = obj[0][k];
-                    primerFila.appendChild(primeraCelda);
-                }
-                tableHeader.appendChild(primerFila);
-                tabla.appendChild(tableHeader);
-
-                // El body de la tabla 
-                for(let i = 1; i< obj.length; i++){
-                    let fila = document.createElement('tr');
-                    for(let j = 0; j<obj[i].length; j++){
-                        let celda = document.createElement('td');
-                        celda.textContent = obj[i][j];
-                        fila.appendChild(celda);
-                    }
                     
-                    tablaBody.appendChild(fila);
-                }
+    tabla = document.createElement('table');
+    tabla.id = 'tablaRegActividades';
 
-                // Array.from(obj).forEach((filaActual, i) =>{
-                //     let fila = document.createElement('tr');
-                //     filaActual.forEach(celdaActual =>{
-                //         let celda = document.createElement('td');
-                //         celda.textContent = celdaActual;
-                //         fila.appendChild(celda);
-                //     });
-                //     if(i == 0){
-                //         tableHeader.appendChild(fila);
-                //         tabla.appendChild(tableHeader);
-                //     }else{
-                //         tablaBody.appendChild(fila);
-                //     }
-                    
-                // });
+    let tableHeader = document.createElement('thead');
+    let tablaBody = document.createElement('tbody');
+    let primerFila = document.createElement('tr');
 
-                //Agregamos clases ala cabecera
-                tableHeader.classList.add('table-dark');
+    // Header de la tabla 
+    for(let k =0; k < obj[0].length; k++){
+        let primeraCelda = document.createElement('td');
+        primeraCelda.textContent = obj[0][k];
+        primerFila.appendChild(primeraCelda);
+    }
+    tableHeader.appendChild(primerFila);
+    tabla.appendChild(tableHeader);
 
-                //Agregramos el cuerpo a la tabla
-                tabla.appendChild(tablaBody);
+    // El body de la tabla 
+    for(let i = 1; i< obj.length; i++){
+        let fila = document.createElement('tr');
+        for(let j = 0; j<obj[i].length; j++){
+            let celda = document.createElement('td');
+            celda.textContent = obj[i][j];
+            fila.appendChild(celda);
+        }
+        
+        tablaBody.appendChild(fila);
+    }
 
-                //agregamos clases a la tabla 
-                tabla.classList.add('table', 'table-striped', 'border', 'border-3');
+    // Array.from(obj).forEach((filaActual, i) =>{
+    //     let fila = document.createElement('tr');
+    //     filaActual.forEach(celdaActual =>{
+    //         let celda = document.createElement('td');
+    //         celda.textContent = celdaActual;
+    //         fila.appendChild(celda);
+    //     });
+    //     if(i == 0){
+    //         tableHeader.appendChild(fila);
+    //         tabla.appendChild(tableHeader);
+    //     }else{
+    //         tablaBody.appendChild(fila);
+    //     }
+        
+    // });
 
-                //agremos tabla a la pagina
-                document.getElementById('divRegActvidades').appendChild(tabla);
+    //Agregamos clases ala cabecera
+    tableHeader.classList.add('table-dark');
 
-            }
-         ).obtenerRegActividades();
+    //Agregramos el cuerpo a la tabla
+    tabla.appendChild(tablaBody);
+
+    //agregamos clases a la tabla 
+    tabla.classList.add('table', 'table-striped', 'border', 'border-3');
+
+    //agremos tabla a la pagina
+    document.getElementById('divRegActvidades').appendChild(tabla);
+
+    //Mostrar notificacion de OK
+    crearNotificacion(1,'Contactos obtenidos correctamente', 'Todo en orden' )
+
+    }
+
+    function crearTablaRegistrosError(){
+        // mostrar notificacion de error
+    }
+
+    function crearNotificacion(tipo, mensaje, titulo){
+        //obtenemos datos
+        let textoNotificacion = document.getElementById('textoNotificacion');
+        let tituloNotificacion = document.getElementById('tituloNotificacion');
+        let elementNotifiacion = document.getElementById('ttNotificacion');
+        let iconoNotificacion = document.getElementById('iconoNotificacion');
+        let notificacion = bootstrap.Toast.getOrCreateInstance(elementNotifiacion)
+
+        //Editar notificacion
+        iconoNotificacion.className = '';
+        iconoNotificacion.classList.add('bi', 'bi-check2-square');
+        textoNotificacion.textContent = mensaje;
+        tituloNotificacion.textContent = titulo;
+        elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-azul-verde');
+
+        //Mostar la notificacion
+        notificacion.show();
     }
 </script>
