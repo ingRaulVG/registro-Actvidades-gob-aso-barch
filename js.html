@@ -1,123 +1,137 @@
 <script>
 
-    const NOTIFICACION_OK = 1;
-    const NOTIFICACION_DANGER = 2;
-    const NOTIFICACION_WARNING = 3;
 
-
-    function crearTablaRegActividades(){
+    function crearTablaRegActividades() {
 
         let tabla = document.getElementById('tablaRegActividades');
-        if(tabla) tabla.remove();
+        if (tabla) tabla.remove();
 
         google.script.run
-        .withSuccessHandler(crearTablaRegistrosCorrectamente)
-        .withFailureHandler(crearTablaRegistrosError)
-        .obtenerRegActividades();
+            .withSuccessHandler(crearTablaRegistrosCorrectamente)
+            .withFailureHandler(crearTablaRegistrosError)
+            .obtenerRegActividades();
     }
 
-    function crearTablaRegistrosCorrectamente(obj){
+    function crearTablaRegistrosCorrectamente(obj) {
 
-                    
-    tabla = document.createElement('table');
-    tabla.id = 'tablaRegActividades';
 
-    let tableHeader = document.createElement('thead');
-    let tablaBody = document.createElement('tbody');
-    let primerFila = document.createElement('tr');
+        tabla = document.createElement('table');
+        tabla.id = 'tablaRegActividades';
 
-    // Header de la tabla 
-    for(let k =0; k < obj[0].length; k++){
-        let primeraCelda = document.createElement('td');
-        primeraCelda.textContent = obj[0][k];
-        primerFila.appendChild(primeraCelda);
-    }
-    tableHeader.appendChild(primerFila);
-    tabla.appendChild(tableHeader);
+        let tableHeader = document.createElement('thead');
+        let tablaBody = document.createElement('tbody');
+        let primerFila = document.createElement('tr');
 
-    // El body de la tabla 
-    for(let i = 1; i< obj.length; i++){
-        let fila = document.createElement('tr');
-        for(let j = 0; j<obj[i].length; j++){
-            let celda = document.createElement('td');
-            celda.textContent = obj[i][j];
-            fila.appendChild(celda);
+        // Header de la tabla 
+        for (let k = 0; k < obj[0].length; k++) {
+            let primeraCelda = document.createElement('td');
+            primeraCelda.textContent = obj[0][k];
+            primerFila.appendChild(primeraCelda);
         }
-        
-        tablaBody.appendChild(fila);
+        tableHeader.appendChild(primerFila);
+        tabla.appendChild(tableHeader);
+
+        // El body de la tabla 
+        for (let i = 1; i < obj.length; i++) {
+            let fila = document.createElement('tr');
+            for (let j = 0; j < obj[i].length; j++) {
+                let celda = document.createElement('td');
+                celda.textContent = obj[i][j];
+                fila.appendChild(celda);
+            }
+
+            tablaBody.appendChild(fila);
+        }
+
+        // Array.from(obj).forEach((filaActual, i) =>{
+        //     let fila = document.createElement('tr');
+        //     filaActual.forEach(celdaActual =>{
+        //         let celda = document.createElement('td');
+        //         celda.textContent = celdaActual;
+        //         fila.appendChild(celda);
+        //     });
+        //     if(i == 0){
+        //         tableHeader.appendChild(fila);
+        //         tabla.appendChild(tableHeader);
+        //     }else{
+        //         tablaBody.appendChild(fila);
+        //     }
+
+        // });
+
+        //Agregamos clases ala cabecera
+        tableHeader.classList.add('table-dark');
+
+        //Agregramos el cuerpo a la tabla
+        tabla.appendChild(tablaBody);
+
+        //agregamos clases a la tabla 
+        tabla.classList.add('table', 'table-striped', 'border', 'border-4', 'border-dark');
+
+        //agremos tabla a la pagina
+        document.getElementById('divRegActvidades').appendChild(tabla);
+
+        //Mostrar notificacion de OK
+        crearNotificacionOK('Contactos obtenidos correctamente', 'Todo en orden')
+
     }
 
-    // Array.from(obj).forEach((filaActual, i) =>{
-    //     let fila = document.createElement('tr');
-    //     filaActual.forEach(celdaActual =>{
-    //         let celda = document.createElement('td');
-    //         celda.textContent = celdaActual;
-    //         fila.appendChild(celda);
-    //     });
-    //     if(i == 0){
-    //         tableHeader.appendChild(fila);
-    //         tabla.appendChild(tableHeader);
-    //     }else{
-    //         tablaBody.appendChild(fila);
-    //     }
-        
-    // });
-
-    //Agregamos clases ala cabecera
-    tableHeader.classList.add('table-dark');
-
-    //Agregramos el cuerpo a la tabla
-    tabla.appendChild(tablaBody);
-
-    //agregamos clases a la tabla 
-    tabla.classList.add('table', 'table-striped', 'border', 'border-4', 'border-dark');
-
-    //agremos tabla a la pagina
-    document.getElementById('divRegActvidades').appendChild(tabla);
-
-    //Mostrar notificacion de OK
-    crearNotificacion(NOTIFICACION_OK,'Contactos obtenidos correctamente', 'Todo en orden' )
-
-    }
-
-    function crearTablaRegistrosError(){
+    function crearTablaRegistrosError() {
         // mostrar notificacion de error
-        crearNotificacion(NOTIFICACION_DANGER,'No se han podido leer las actividades', 'ERROR' )
+        crearNotificacionError('No se han podido leer las actividades', 'ERROR')
     }
 
-    function crearNotificacion(tipo, mensaje, titulo){
-        //obtenemos datos
-        let textoNotificacion = document.getElementById('textoNotificacion');
-        let tituloNotificacion = document.getElementById('tituloNotificacion');
+    function crearNotificacion(mensaje, titulo) {
+
+        document.getElementById('textoNotificacion').textContent = mensaje;
+        document.getElementById('tituloNotificacion').textContent = titulo;
+        let elementoNotificacion = document.getElementById('ttNotificacion');
+        bootstrap.Toast.getOrCreateInstance(elementoNotificacion).show();
+
+
+    }
+    function crearNotificacionOK(mensaje, titulo) {
+
+        crearNotificacion(mensaje, titulo);
+        crearIconoNotificacionOK();
+        crearColorNotificacion('--color-azul-verde')
+
+
+    }
+    function crearNotificacionError(mensaje, titulo) {
+
+        crearNotificacion(mensaje, titulo);
+        crearIconoNotificacionError();
+        crearColorNotificacion('--color-rojo-oscuro')
+
+
+    }
+    function crearNotificacionAdvertencia(mensaje, titulo) {
+
+        crearNotificacion(mensaje, titulo);
+        crearIconoNotificacionAdvertencia();
+        crearColorNotificacion('--color-amarillo-oscuro');
+
+    }
+
+    function crearIconoNotificacionOK(mensaje, titulo){
+
+        document.getElementById('iconoNotificacion').className = '';
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-check2-square');
+
+    }
+    function crearIconoNotificacionError(mensaje, titulo){
+        document.getElementById('iconoNotificacion').className = '';
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-bug');  
+    }
+    function crearIconoNotificacionAdvertencia(mensaje, titulo){
+        document.getElementById('iconoNotificacion').className = '';
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-exclamation-square');
+    }
+
+    function crearColorNotificacion(color){
         let elementNotifiacion = document.getElementById('ttNotificacion');
-        let iconoNotificacion = document.getElementById('iconoNotificacion');
-        let notificacion = bootstrap.Toast.getOrCreateInstance(elementNotifiacion)
-
-        //Editar notificacion
-        textoNotificacion.textContent = mensaje;
-        tituloNotificacion.textContent = titulo;
-
-        switch(tipo){
-            case NOTIFICACION_OK: 
-            iconoNotificacion.className = '';
-            iconoNotificacion.classList.add('bi', 'bi-check2-square');
-            elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-azul-verde');
-            break;
-            case NOTIFICACION_DANGER: 
-            iconoNotificacion.className = '';
-            iconoNotificacion.classList.add('bi', 'bi-bug');
-            elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-rojo-oscuro');
-            break;
-            case NOTIFICACION_WARNING: 
-            iconoNotificacion.className = '';
-            iconoNotificacion.classList.add('bi', 'bi-exclamation-square');
-            elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-amarillo-oscuro');
-            break;
-        }
-
-
-
-        //Mostar la notificacion
-        notificacion.show();
+        elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue(color);
     }
+
 </script>
