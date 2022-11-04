@@ -3,8 +3,11 @@
 
     function crearTablaRegActividades() {
 
-        let tabla = document.getElementById('tablaRegActividades');
-        if (tabla) tabla.remove();
+        //Eliminar la tabla si existe
+        borrarTabla();
+
+        // crear Loader
+        crearLoaderanillo('divRegActvidades')
 
         google.script.run
             .withSuccessHandler(crearTablaRegistrosCorrectamente)
@@ -74,11 +77,17 @@
         //Mostrar notificacion de OK
         crearNotificacionOK('Contactos obtenidos correctamente', 'Todo en orden')
 
+        // eliminar el loader
+        eliminarLoader();
+
     }
 
     function crearTablaRegistrosError() {
         // mostrar notificacion de error
         crearNotificacionError('No se han podido leer las actividades', 'ERROR')
+
+        // eliminar el loader
+        eliminarLoader();
     }
 
     function crearNotificacion(mensaje, titulo) {
@@ -132,6 +141,40 @@
     function crearColorNotificacion(color){
         let elementNotifiacion = document.getElementById('ttNotificacion');
         elementNotifiacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue(color);
+    }
+
+    function crearLoader(elementoPadre){
+
+        eliminarLoader();
+        let loader = document.createElement('div');
+        loader.id = 'loader';
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        
+
+        return document.getElementById(elementoPadre).appendChild(loader);
+
+    }
+
+    function crearLoaderpuntos(elementoPadre){
+        let loader = crearLoader(elementoPadre);
+        loader.classList.add('lds-ellipsis');
+    }
+
+    function crearLoaderanillo(elementoPadre){
+        let loader = crearLoader(elementoPadre);
+        loader.classList.add('lds-ring');     
+    }
+
+    function eliminarLoader(){
+        let loader = document.getElementById('loader');
+        if(loader) loader.remove();
+    }
+    function borrarTabla(){
+        let tabla = document.getElementById('tablaRegActividades');
+        if (tabla) tabla.remove();
     }
 
 </script>
